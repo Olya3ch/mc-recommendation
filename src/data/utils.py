@@ -2,15 +2,15 @@ import nltk
 import rowordnet as rwn
 import re
 
+nltk.download("stopwords")
+nltk.download("punkt")
+
+rown = rwn.RoWordNet()
+
 
 def get_keywords_in_romanian(text: str):
     html_tags_pattern = re.compile(r"<.*?>")
     filtered_text = re.sub(html_tags_pattern, "", text)
-
-    nltk.download("stopwords")
-    nltk.download("punkt")
-
-    rown = rwn.RoWordNet()
 
     stop_words = set(nltk.corpus.stopwords.words("romanian"))
     stop_words.update(
@@ -62,3 +62,16 @@ def get_keywords_in_romanian(text: str):
     keywords = [(token, synonyms.get(stem, "")) for token, stem in zip(tokens, stems)]
 
     return keywords
+
+
+def create_article_from_hit(hit):
+    article = {
+        "id": hit["_id"],
+        "title": hit["_source"].get("post_title", ""),
+        "keywords": get_keywords_in_romanian(hit["_source"].get("post_content", "")),
+    }
+    if "category" in hit["_source"]["terms"]:
+        for category in hit["_source"]["terms"]["category"]:
+            if "name" in category:
+                article["category"] = category["name"]
+    return article
