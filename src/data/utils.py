@@ -1,11 +1,18 @@
 import nltk
-import rowordnet as rwn
 import re
 
 nltk.download("stopwords")
 nltk.download("punkt")
+nltk.download("omw-1.4")
+nltk.download("wordnet")
 
-rown = rwn.RoWordNet()
+
+def get_synonyms(word):
+    synonyms = set()
+    for synset in nltk.corpus.wordnet.synsets(word, lang="ron"):
+        for lemma in synset.lemmas(lang="ron"):
+            synonyms.add(lemma.name())
+    return list(synonyms)
 
 
 def get_keywords_in_romanian(text: str):
@@ -53,25 +60,23 @@ def get_keywords_in_romanian(text: str):
 
     synonyms = {}
     for stem in stems:
-        synsets = rown.synsets(stem)
-        for synset in synsets:
-            if isinstance(synset, rwn.Synset):
-                for lemma in synset.lemmas():
-                    synonyms[lemma.name()] = stem
+        synonyms[stem] = get_synonyms(stem)
 
-    keywords = [(token, synonyms.get(stem, "")) for token, stem in zip(tokens, stems)]
+    keywords = [(token, synonyms.get(stem, [])) for token, stem in zip(tokens, stems)]
 
     return keywords
 
 
 def create_article_from_hit(hit):
+    content_keywords = get_keywords_in_romanian(hit["_source"].get("post_content", ""))
+    title_keywords = get_keywords_in_romanian(hit["_source"].get("post_title", ""))
     article = {
         "id": hit["_id"],
-        "title": hit["_source"].get("post_title", ""),
-        "keywords": get_keywords_in_romanian(hit["_source"].get("post_content", "")),
+        "author": hit["_source"]["post_author"]["display_name"],
+        "keywords": content_keywords + title_keywords,
     }
     if "category" in hit["_source"]["terms"]:
         for category in hit["_source"]["terms"]["category"]:
-            if "name" in category:
-                article["category"] = category["name"]
+            if "slug" in category:
+                article["category"] = category["slug"]
     return article
