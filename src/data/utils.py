@@ -49,9 +49,13 @@ def get_keywords_in_romanian(text: str):
     for stem in stems:
         synonyms[stem] = get_synonyms(stem)
 
-    keywords = [(token, synonyms.get(stem, [])) for token, stem in zip(tokens, stems)]
+    keywords = [token for token in tokens]
+    for stem, syns in synonyms.items():
+        if syns:
+            keywords.append(stem)
+            keywords.extend(syns)
 
-    return keywords
+    return list(set(keywords))
 
 
 def create_article_from_hit(hit):
@@ -66,7 +70,7 @@ def create_article_from_hit(hit):
     article = {
         "id": hit["_id"],
         "author": hit["_source"]["post_author"]["display_name"],
-        "keywords": [content_keywords, title_keywords],
+        "keywords": content_keywords + title_keywords,
         "categories": categories,
     }
     return article
