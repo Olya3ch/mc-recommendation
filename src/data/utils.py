@@ -1,5 +1,8 @@
 import nltk
 import re
+import string
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords, wordnet
 
 nltk.download("stopwords")
 nltk.download("punkt")
@@ -9,51 +12,35 @@ nltk.download("wordnet")
 
 def get_synonyms(word):
     synonyms = set()
-    for synset in nltk.corpus.wordnet.synsets(word, lang="ron"):
+    for synset in wordnet.synsets(word, lang="ron"):
         for lemma in synset.lemmas(lang="ron"):
             synonyms.add(lemma.name())
     return list(synonyms)
 
 
+def preprocess_text(text):
+    filtered_text = re.sub(r"<.*?>", "", text)
+    filtered_text = re.sub(r"http\S+", "", filtered_text)
+
+    tokens = nltk.word_tokenize(filtered_text)
+
+    lemmatizer = WordNetLemmatizer()
+    stop_words = set(stopwords.words("romanian"))
+
+    filtered_tokens = []
+    for token in tokens:
+        if token not in string.punctuation and not token.isdigit():
+            token = re.sub(r"[^\w\s]", "", token)
+            lemma = lemmatizer.lemmatize(token.lower())
+            if lemma and lemma not in stop_words:
+                filtered_tokens.append(lemma)
+
+    return filtered_tokens
+
+
 def get_keywords_in_romanian(text: str):
-    html_tags_pattern = re.compile(r"<.*?>")
-    filtered_text = re.sub(html_tags_pattern, "", text)
-
-    stop_words = set(nltk.corpus.stopwords.words("romanian"))
-    stop_words.update(
-        [
-            "vasile",
-            "filat",
-            "pastorul",
-            "buna",
-            "vestirea",
-            "chișinău",
-            ".",
-            "serviciile",
-            "divine",
-            "bisericii",
-            "loc",
-            "duminică",
-            ",",
-            "14.00",
-            "16.00",
-            ",",
-            "str.ciocârliei",
-            "2/8",
-            "sectorul",
-            "telecentru",
-            ":",
-            "așa",
-            "și",
-            "?",
-        ]
-    )
-
-    tokens = [
-        word.lower()
-        for word in nltk.word_tokenize(filtered_text)
-        if word.lower() not in stop_words
-    ]
+    text_tokens = preprocess_text(text)
+    tokens = [token for token in text_tokens if len(token) > 3]
 
     stemmer = nltk.stem.SnowballStemmer("romanian")
     stems = [stemmer.stem(token) for token in tokens]
@@ -73,7 +60,7 @@ def create_article_from_hit(hit):
     article = {
         "id": hit["_id"],
         "author": hit["_source"]["post_author"]["display_name"],
-        "keywords": content_keywords + title_keywords,
+        "keywords": [content_keywords, title_keywords],
     }
     if "category" in hit["_source"]["terms"]:
         for category in hit["_source"]["terms"]["category"]:
