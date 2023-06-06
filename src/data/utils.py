@@ -70,7 +70,7 @@ def create_article_from_hit(hit):
     article = {
         "id": hit["_id"],
         "author": hit["_source"]["post_author"]["login"],
-        "keywords": content_keywords + title_keywords,
-        "categories": categories,
+        "keywords": " ".join(content_keywords + title_keywords),
+        "categories": " ".join(categories),
     }
     return article

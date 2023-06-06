@@ -12,6 +12,8 @@ black = "23.3.0"
 elasticsearch = "7.17.9"
 nltk = "^3.8.1"
 rowordnet = "^1.1.0"
+sklearn = "^0.0.post4"
+scikit-learn = "^1.2.2"
 
 
 [build-system]
