@@ -32,7 +32,11 @@ def preprocess_text(text):
         if token not in string.punctuation and not token.isdigit():
             token = re.sub(r"[^\w\s]", "", token)
             lemma = lemmatizer.lemmatize(token.lower())
-            if lemma and lemma not in stop_words:
+            if (
+                lemma
+                and lemma not in stop_words
+                and not re.match(r"^[a-z0-9_]+$", lemma)
+            ):
                 filtered_tokens.append(lemma)
 
     return filtered_tokens
@@ -66,11 +70,7 @@ def create_article_from_hit(hit):
         for category in hit["_source"]["terms"]["category"]:
             if "slug" in category:
                 categories.append(category["slug"])
-
-    article = {
-        "id": hit["_id"],
-        "author": hit["_source"]["post_author"]["login"],
-        "keywords": " ".join(content_keywords + title_keywords),
-        "categories": " ".join(categories),
-    }
+    author = hit["_source"]["post_author"]["login"]
+    keywords = content_keywords + title_keywords + categories + [author]
+    article = {"id": hit["_id"], "keywords": [keyword.lower() for keyword in keywords]}
     return article
