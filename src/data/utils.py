@@ -36,6 +36,7 @@ def preprocess_text(text):
                 lemma
                 and lemma not in stop_words
                 and not re.match(r"^[a-z0-9_]+$", lemma)
+                and re.match(r"^[^\d]*$", lemma)
             ):
                 filtered_tokens.append(lemma)
 

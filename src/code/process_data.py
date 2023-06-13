@@ -9,9 +9,10 @@ def vectorize_features(df):
 
     features = vectorizer.fit_transform(df["keywords"])
 
-    return features, vectorizer
+    vectors = pd.DataFrame(
+        features.todense(), columns=vectorizer.get_feature_names_out()
+    )
 
+    vectors.to_csv("src/vectorized_features.csv", index=False)
 
-features, vectorizer = vectorize_features(articles)
-
-print(features.toarray())
+    return vectors
