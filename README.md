@@ -11,3 +11,5 @@ To run this project, you will need to add the following environment variables to
 `ELASTIC_USERNAME`
 
 `ELASTIC_PASSWORD`
+
+`NUMBER_OF_CLUSTERS`
