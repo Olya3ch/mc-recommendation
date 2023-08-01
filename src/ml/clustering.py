@@ -19,6 +19,6 @@ def find_optimal_clusters(features):
 
 
 def apply_clustering(vectors_df, n_clusters):
-    kmeans_model = KMeans(n_clusters=n_clusters, random_state=42)
+    kmeans_model = KMeans(n_clusters=n_clusters)
     kmeans_model.fit(vectors_df)
     return kmeans_model
