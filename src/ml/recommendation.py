@@ -9,15 +9,16 @@ def calculate_similarity_scores(vectors_df):
     )
 
 
-def build_recommendation_system(vectors_df, similarity_matrix):
+def build_recommendation_system(vectors_df, similarity_matrix, article_id_mapping):
     article_id_to_cluster = dict(vectors_df["cluster_labels"].reset_index().values)
 
     def recommend_articles(article_id, num_recommendations=5):
         cluster_label = article_id_to_cluster.get(article_id)
+
         if cluster_label is None:
             return []
 
-        similar_articles = similarity_matrix[
+        similar_articles = similarity_matrix.loc[
             similarity_matrix.index.isin(
                 vectors_df[vectors_df["cluster_labels"] == cluster_label].index
             )
@@ -27,6 +28,11 @@ def build_recommendation_system(vectors_df, similarity_matrix):
 
         recommended_articles = similar_articles.index.tolist()
 
-        return recommended_articles
+        recommended_article_ids = [
+            article_id_mapping[index] for index in recommended_articles
+        ]
+        print(f"Recommended Article IDs: {recommended_article_ids}")
+
+        return recommended_article_ids
 
     return recommend_articles

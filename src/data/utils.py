@@ -73,5 +73,9 @@ def create_article_from_hit(hit):
                 categories.append(category["slug"])
     author = hit["_source"]["post_author"]["login"]
     keywords = content_keywords + title_keywords + categories + [author]
-    article = {"id": hit["_id"], "keywords": [keyword.lower() for keyword in keywords]}
+    article = {
+        "id": hit["_id"],
+        "title": hit["_source"]["post_title"],
+        "keywords": [keyword.lower() for keyword in keywords],
+    }
     return article

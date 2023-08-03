@@ -30,7 +30,7 @@ def save_articles_info_to_csv(language: str, filename: str):
             print("No articles found")
             return
         with open(filename, "w", newline="", encoding="utf-8") as csvfile:
-            fieldnames = ["id", "keywords"]
+            fieldnames = ["id", "title", "keywords"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for article in articles:
