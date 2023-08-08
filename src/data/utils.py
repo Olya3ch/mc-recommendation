@@ -54,7 +54,7 @@ def get_keywords_in_romanian(text: str):
     for stem in stems:
         synonyms[stem] = get_synonyms(stem)
 
-    keywords = [token for token in tokens]
+    keywords = [token.lower() for token in tokens]
     for stem, syns in synonyms.items():
         if syns:
             keywords.append(stem)
@@ -64,18 +64,23 @@ def get_keywords_in_romanian(text: str):
 
 
 def create_article_from_hit(hit):
-    content_keywords = get_keywords_in_romanian(hit["_source"].get("post_content", ""))
-    title_keywords = get_keywords_in_romanian(hit["_source"].get("post_title", ""))
+    content_keywords = " ".join(
+        get_keywords_in_romanian(hit["_source"].get("post_content", ""))
+    )
+    title_keywords = " ".join(
+        get_keywords_in_romanian(hit["_source"].get("post_title", ""))
+    )
     categories = []
     if "category" in hit["_source"]["terms"]:
         for category in hit["_source"]["terms"]["category"]:
             if "slug" in category:
                 categories.append(category["slug"])
-    author = hit["_source"]["post_author"]["login"]
-    keywords = content_keywords + title_keywords + categories + [author]
+    author = hit["_source"]["post_author"]["login"].lower()
     article = {
         "id": hit["_id"],
-        "title": hit["_source"]["post_title"],
-        "keywords": [keyword.lower() for keyword in keywords],
+        "title": title_keywords if title_keywords else "",
+        "author": author if author else "",
+        "category": " ".join(categories) if categories else "",
+        "content": content_keywords if content_keywords else "",
     }
     return article

@@ -1,24 +1,38 @@
 import pandas as pd
-from src.ml.utils import create_mapping_between_article_id_and_index
+from src.ml.utils import article_id_mapping
 from vectorization import vectorize_features
 from recommendation import calculate_similarity_scores, build_recommendation_system
 
 
 def main(article_id):
     articles = pd.read_csv("src/data/seed/ro_articles.csv")
+    articles.fillna("", inplace=True)
+    mapped_ids = article_id_mapping(articles)
 
-    vectors_df = vectorize_features(articles)
+    features = ["title", "content", "category", "author"]
 
-    similarity_matrix = calculate_similarity_scores(vectors_df)
+    all_recommendations = []
 
-    article_id_mapping = dict(enumerate(articles["id"]))
+    for feature in features:
+        if articles[feature] is None:
+            print(f"Skipping empty {feature}")
+            continue
 
-    recommend_articles_func = build_recommendation_system(
-        vectors_df, similarity_matrix, article_id_mapping
+        vectors = vectorize_features(articles, feature)
+
+        similarity_matrix = calculate_similarity_scores(vectors, method="cosine")
+        recommend_articles_func = build_recommendation_system(
+            similarity_matrix, mapped_ids
+        )
+
+        recommendations = recommend_articles_func(article_id)
+        all_recommendations.extend(recommendations)
+
+    sorted_recommendations = sorted(
+        all_recommendations, key=lambda x: all_recommendations.count(x), reverse=True
     )
 
-    recommended_articles = recommend_articles_func(article_id)
-    print("Recommended articles:", recommended_articles)
+    print("Recommended articles:", sorted_recommendations[:5])
 
 
-main(99270)
+main(340622)
