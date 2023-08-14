@@ -2,9 +2,9 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-def vectorize_features(df, column_name):
+def vectorize_features(df):
     vectorizer = TfidfVectorizer()
-    features = vectorizer.fit_transform(df[column_name])
+    features = vectorizer.fit_transform(df)
 
     vectors_df = pd.DataFrame(
         features.todense(), columns=vectorizer.get_feature_names_out()

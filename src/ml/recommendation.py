@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-def calculate_similarity_scores(vectors_df, method="cosine"):
+def calculate_similarity_scores(vectors_df):
     similarity_matrix = cosine_similarity(vectors_df)
     return pd.DataFrame(
         similarity_matrix, index=vectors_df.index, columns=vectors_df.index
