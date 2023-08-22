@@ -42,6 +42,3 @@ recommended_articles = main(51562)
 
 print("Recommended articles:", recommended_articles)
 print("Length of recommendations", len(recommended_articles))
-
-if __name__ == "__main__":
-    main()
