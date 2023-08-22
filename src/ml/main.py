@@ -1,22 +1,25 @@
 import pandas as pd
+from src.ml.recommendation import recommend_articles
 from src.ml.utils import article_id_mapping
 from vectorization import vectorize_features
-from recommendation import calculate_similarity_scores, build_recommendation_system
+from recommendation import calculate_similarity_scores, recommend_articles
 
 
 def main(article_id):
     articles = pd.read_csv("src/data/seed/ro_articles.csv")
+    articles.fillna("", inplace=True)
+
     mapped_ids = article_id_mapping(articles)
 
-    combined_features = articles["title"] + " " + articles["content"]
-    combined_features.fillna("", inplace=True)
+    combined_features = articles["title"] + articles["content"]
 
     vectors = vectorize_features(combined_features)
 
     similarity_matrix = calculate_similarity_scores(vectors)
 
-    recommend_articles_func = build_recommendation_system(similarity_matrix, mapped_ids)
-    recommendations = recommend_articles_func(article_id)
+    recommendations = recommend_articles(
+        article_id, similarity_matrix, mapped_ids, articles
+    )
 
     similarity_scores_dict = {}
 
@@ -35,7 +38,10 @@ def main(article_id):
     return sorted_recommendations
 
 
-recommended_articles = main(65551)
+recommended_articles = main(51562)
 
 print("Recommended articles:", recommended_articles)
 print("Length of recommendations", len(recommended_articles))
+
+if __name__ == "__main__":
+    main()

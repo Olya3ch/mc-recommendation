@@ -64,12 +64,10 @@ def get_keywords_in_romanian(text: str):
 
 
 def create_article_from_hit(hit):
-    content_keywords = " ".join(
-        get_keywords_in_romanian(hit["_source"].get("post_content", ""))
-    )
-    title_keywords = " ".join(
-        get_keywords_in_romanian(hit["_source"].get("post_title", ""))
-    )
+    content_keywords = get_keywords_in_romanian(hit["_source"].get("post_content", ""))
+
+    title_keywords = get_keywords_in_romanian(hit["_source"].get("post_title", ""))
+
     categories = []
     if "category" in hit["_source"]["terms"]:
         for category in hit["_source"]["terms"]["category"]:
@@ -80,7 +78,7 @@ def create_article_from_hit(hit):
         "id": hit["_id"],
         "title": title_keywords if title_keywords else "",
         "author": author if author else "",
-        "category": " ".join(categories) if categories else "",
+        "category": categories if categories else "",
         "content": content_keywords if content_keywords else "",
     }
     return article
