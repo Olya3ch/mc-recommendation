@@ -1,33 +1,27 @@
 import pandas as pd
 from src.ml.recommendation import recommend_articles
 from src.ml.utils import article_id_mapping
-from vectorization import vectorize_features
-from recommendation import calculate_similarity_scores, recommend_articles
+from recommendation import recommend_articles
+from src.ml.vector_similarity import (
+    calculate_similarity_matrix,
+    calculate_similarity_scores_dict,
+)
 
 
 def main(article_id):
-    articles = pd.read_csv("src/data/seed/ro_articles.csv")
-    articles.fillna("", inplace=True)
+    articles_df = pd.read_csv("src/data/seed/ro_articles.csv")
+    articles_df.fillna("", inplace=True)
+    mapped_ids = article_id_mapping(articles_df)
 
-    mapped_ids = article_id_mapping(articles)
-
-    combined_features = articles["title"] + articles["content"]
-
-    vectors = vectorize_features(combined_features)
-
-    similarity_matrix = calculate_similarity_scores(vectors)
+    similarity_matrix = calculate_similarity_matrix(articles_df)
 
     recommendations = recommend_articles(
-        article_id, similarity_matrix, mapped_ids, articles
+        article_id, similarity_matrix, mapped_ids, articles_df
     )
 
-    similarity_scores_dict = {}
-
-    for recommended_id in recommendations:
-        similarity_score = similarity_matrix[mapped_ids[article_id]][
-            mapped_ids[recommended_id]
-        ]
-        similarity_scores_dict[recommended_id] = similarity_score
+    similarity_scores_dict = calculate_similarity_scores_dict(
+        similarity_matrix, article_id, mapped_ids, recommendations
+    )
 
     sorted_recommendations = sorted(
         similarity_scores_dict.items(),
@@ -38,7 +32,8 @@ def main(article_id):
     return sorted_recommendations
 
 
-recommended_articles = main(51562)
-
-print("Recommended articles:", recommended_articles)
-print("Length of recommendations", len(recommended_articles))
+if __name__ == "__main__":
+    article_id = 51562
+    recommended_articles = main(article_id)
+    print("Recommended articles:", recommended_articles)
+    print("Length of recommendations:", len(recommended_articles))
