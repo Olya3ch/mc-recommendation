@@ -5,17 +5,21 @@ def filter_similar_articles(
     similarities, article_idx, input_article, articles_df, min_similarity
 ):
     article = articles_df.loc[article_idx]
-    return (
-        similarities[article_idx] >= min_similarity
-        and article["author"] == input_article["author"]
-        and (
-            not pd.isna(article["category"])
-            and any(
-                category in input_article["category"]
-                for category in article["category"]
-            )
+
+    has_categories = len(input_article["category"]) > 0
+
+    author_match = article["author"] == input_article["author"]
+
+    if has_categories:
+        category_match = not pd.isna(article["category"]) and any(
+            category in article["category"] for category in input_article["category"]
         )
-    )
+    else:
+        category_match = True
+
+    combined_condition = author_match and category_match
+
+    return similarities[article_idx] >= min_similarity and combined_condition
 
 
 def get_recommended_article_ids(
