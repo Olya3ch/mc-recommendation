@@ -64,21 +64,28 @@ def get_keywords_in_romanian(text: str):
 
 
 def create_article_from_hit(hit):
-    content_keywords = get_keywords_in_romanian(hit["_source"].get("post_content", ""))
+    source = hit["_source"]
+    title = source.get("post_title", "")
 
-    title_keywords = get_keywords_in_romanian(hit["_source"].get("post_title", ""))
+    content_keywords = get_keywords_in_romanian(source.get("post_content", ""))
+    title_keywords = get_keywords_in_romanian(title)
+    keywords = title_keywords + content_keywords
 
     categories = []
-    if "category" in hit["_source"]["terms"]:
-        for category in hit["_source"]["terms"]["category"]:
-            if "slug" in category:
-                categories.append(category["slug"])
-    author = hit["_source"]["post_author"]["login"].lower()
+    if "terms" in source and "category" in source["terms"]:
+        categories = [
+            category["slug"]
+            for category in source["terms"]["category"]
+            if "slug" in category
+        ]
+
+    author = source["post_author"]["login"].lower() if "post_author" in source else ""
+
     article = {
         "id": hit["_id"],
-        "title": title_keywords if title_keywords else "",
-        "author": author if author else "",
-        "category": categories if categories else "",
-        "content": content_keywords if content_keywords else "",
+        "title": title,
+        "author": author,
+        "category": categories,
+        "keywords": keywords,
     }
     return article

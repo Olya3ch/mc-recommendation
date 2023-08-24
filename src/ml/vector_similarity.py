@@ -19,9 +19,7 @@ def vectorize_features(df):
 
 
 def calculate_similarity_matrix(articles_df):
-    combined_features = articles_df["title"] + articles_df["content"]
-
-    vectors_df = vectorize_features(combined_features)
+    vectors_df = vectorize_features(articles_df["keywords"])
 
     n_topics = 10
     lda = LatentDirichletAllocation(n_components=n_topics, random_state=10)
