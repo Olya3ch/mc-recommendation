@@ -41,7 +41,7 @@ def main(article_id):
         reverse=True,
     )
 
-    return sorted_recommendations
+    return sorted_recommendations, articles_df
 
 
 if __name__ == "__main__":

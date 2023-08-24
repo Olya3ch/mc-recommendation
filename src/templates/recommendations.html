@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Recommended Articles</title>
+  </head>
+  <body>
+    <h1>Recommended Articles</h1>
+    <h2>Input Article Information:</h2>
+    <strong>Article ID:</strong> {{ input_article.id }}<br />
+    <strong>Title:</strong> {{ input_article.title }}<br />
+    <strong>Author:</strong> {{ input_article.author }}<br />
+    <strong>Category:</strong> {{ input_article.category }}
+    <hr />
+    <h2>Recommended Articles:</h2>
+    <p>
+      <strong>Number of Recommendations:</strong> {{ recommendations|length }}
+    </p>
+    <ul>
+      {% for rec in recommendations %}
+      <li>
+        <strong>Article ID:</strong> {{ rec.article_id }}<br />
+        <strong>Title:</strong> {{ rec.title }}<br />
+        <strong>Author:</strong> {{ rec.author }}<br />
+        <strong>Category:</strong> {{ rec.category }}<br />
+        <strong>Similarity Score:</strong> {{ rec.similarity_score }}
+      </li>
+      <br />
+      {% endfor %}
+    </ul>
+  </body>
+</html>
