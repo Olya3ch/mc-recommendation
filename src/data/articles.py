@@ -29,6 +29,15 @@ def save_articles_info_to_csv(language: str, filename: str):
         if not articles:
             print("No articles found")
             return
+
+        articles = [
+            article
+            for article in articles
+            if len(article["keywords"]) >= 10 and len(article["category"]) >= 1
+        ]
+
+        seen_titles_and_authors = set()
+
         with open(filename, "w", newline="", encoding="utf-8") as csvfile:
             fieldnames = [
                 "id",
@@ -40,7 +49,11 @@ def save_articles_info_to_csv(language: str, filename: str):
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for article in articles:
-                writer.writerow(article)
-        print(f"Saved {len(articles)} articles to {filename}")
+                title_and_author = (article["title"], article["author"])
+                if title_and_author not in seen_titles_and_authors:
+                    writer.writerow(article)
+                    seen_titles_and_authors.add(title_and_author)
+
+        print(f"Saved {len(seen_titles_and_authors)} articles to {filename}")
     except Exception as e:
         print(f"Error saving articles to CSV: {e}")

@@ -6,16 +6,11 @@ def filter_similar_articles(
 ):
     article = articles_df.loc[article_idx]
 
-    has_categories = len(input_article["category"]) > 0
-
     author_match = article["author"] == input_article["author"]
 
-    if has_categories:
-        category_match = not pd.isna(article["category"]) and any(
-            category in article["category"] for category in input_article["category"]
-        )
-    else:
-        category_match = True
+    category_match = any(
+        category in article["category"] for category in input_article["category"]
+    )
 
     combined_condition = author_match and category_match
 

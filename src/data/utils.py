@@ -105,10 +105,9 @@ def get_stopwords():
         ]
     )
 
-    # nltk_stop_words = set(stopwords.words("romanian"))
-    # extended_stop_words = nltk_stop_words.union(custom_stop_words)
-    # return extended_stop_words
-    return custom_stop_words
+    nltk_stop_words = set(stopwords.words("romanian"))
+    extended_stop_words = nltk_stop_words.union(custom_stop_words)
+    return extended_stop_words
 
 
 def preprocess_text(text):

@@ -42,16 +42,3 @@ def main(article_id):
     )
 
     return sorted_recommendations, articles_df
-
-
-if __name__ == "__main__":
-    article_id = 329755
-    recommended_articles = main(article_id)
-    for article in recommended_articles[:10]:
-        print("Article ID:", article["article_id"])
-        print("Similarity Score:", article["similarity_score"])
-        print("Title:", article["title"])
-        print("Category:", article["category"])
-        print("Author:", article["author"])
-        print("========================")
-    print("Length of recommendations:", len(recommended_articles))
