@@ -18,6 +18,99 @@ def get_synonyms(word):
     return list(synonyms)
 
 
+def get_stopwords():
+    custom_stop_words = set(
+        [
+            "dumnezeu",
+            "biblia",
+            "duhovnicesc",
+            "sfânt",
+            "fi",
+            "între",
+            "sămi",
+            "avut",
+            "odată",
+            "întotdeauna",
+            "mult",
+            "așa",
+            "fãcut",
+            "câteva",
+            "când",
+            "întro",
+            "chișinău",
+            "tot",
+            "târziu",
+            "întrebare",
+            "răspunzi",
+            "poți",
+            "fac",
+            "împreună",
+            "însă",
+            "ești",
+            "este",
+            "atât",
+            "încă",
+            "acelaşi",
+            "împotriva",
+            "toți",
+            "ușor",
+            "filat",
+            "vasile",
+            "chiar",
+            "[se]",
+            "adevăr",
+            "com",
+            "cuvânt",
+            "creștin",
+            "cusur",
+            "de",
+            "și",
+            "făgăduială",
+            "promisiune",
+            "vorbă",
+            "pământ",
+            "făcut",
+            "creare",
+            "facere",
+            "producere",
+            "vorbire",
+            "discurs",
+            "termen",
+            "cuvântare",
+            "cuvântdeonoare",
+            "fărădelege",
+            "slăbiciune",
+            "scădere",
+            "defect",
+            "imperfecțiune",
+            "nelegiuire",
+            "întreg",
+            "adevărat",
+            "cuvântul",
+            "doctrine",
+            "deasemenea",
+            "rezultat",
+            "dezlegare",
+            "rezolvare",
+            "confortabil",
+            "înaintea",
+            "duminică",
+            "bucatădepământ",
+            "împământare",
+            "să",
+            "bine",
+            "facă",
+            "bun",
+            "chiar",
+        ]
+    )
+
+    # nltk_stop_words = set(stopwords.words("romanian"))
+    # extended_stop_words = nltk_stop_words.union(custom_stop_words)
+    # return extended_stop_words
+    return custom_stop_words
+
+
 def preprocess_text(text):
     filtered_text = re.sub(r"<.*?>", "", text)
     filtered_text = re.sub(r"http\S+", "", filtered_text)
@@ -25,7 +118,8 @@ def preprocess_text(text):
     tokens = nltk.word_tokenize(filtered_text)
 
     lemmatizer = WordNetLemmatizer()
-    stop_words = set(stopwords.words("romanian"))
+
+    stop_words = get_stopwords()
 
     filtered_tokens = []
     for token in tokens:
