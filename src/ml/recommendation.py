@@ -1,6 +1,3 @@
-import pandas as pd
-
-
 def filter_similar_articles(
     similarities, article_idx, input_article, articles_df, min_similarity
 ):
@@ -8,7 +5,7 @@ def filter_similar_articles(
 
     author_match = article["author"] == input_article["author"]
 
-    category_match = any(
+    category_match = all(
         category in article["category"] for category in input_article["category"]
     )
 
